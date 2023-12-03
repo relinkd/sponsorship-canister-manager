@@ -1,20 +1,18 @@
 {
-  "name": "example_frontend",
-  "version": "0.2.0",
-  "description": "Internet Computer starter application",
+  "name": "sponsorship-canister-manager",
+  "version": "0.1.0",
+  "description": "{r}sponorship canister",
   "keywords": [
+    "{r}elinkd",
     "Internet Computer",
-    "Motoko",
-    "JavaScript",
+    "Rust",
     "Canister"
   ],
   "scripts": {
-    "build": "webpack",
     "prebuild": "dfx generate",
-    "start": "webpack serve --mode development --env development",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
-    "generate": "dfx generate example_backend"
+    "generate": "dfx generate canister"
   },
   "dependencies": {
     "@dfinity/agent": "^0.20.2",
