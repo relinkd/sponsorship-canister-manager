@@ -1,6 +1,6 @@
 {
   "canisters": {
-    "example_backend": {
+    "sponsor": {
       "candid": "src/sponsor/sponsor.did",
       "package": "sponsor",
       "type": "rust"
