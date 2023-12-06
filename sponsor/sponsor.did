@@ -1,1 +1,10 @@
-service : { get : (nat) -> (opt nat) query; insert : (nat, nat) -> (opt nat) }
+type UserProfile = record {
+    age: nat8;
+    name: text;
+};
+
+service : {
+    "get": (nat64) -> (opt UserProfile) query;
+    "insert": (nat64, UserProfile) -> (opt UserProfile);
+    "getSelf": () -> (principal) query;
+}
