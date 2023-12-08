@@ -13,6 +13,7 @@ type Memory = VirtualMemory<DefaultMemoryImpl>;
 const MAX_VALUE_SIZE: u32 = 100;
 const MAX_KEY_SIZE: u32 = 100;
 
+#[derive(CandidType, Deserialize, Clone, Debug, Default)]
 struct CanisterState {
     controllers: BTreeMap<String, bool>,
     max_call_per_user: u16,
@@ -70,6 +71,8 @@ thread_local! {
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
         )
     );
+
+    static CANISTER_STATE: RefCell<CanisterState> = RefCell::new(CanisterState::default());
 }
 
 // Retrieves the value associated with the given key if it exists.
