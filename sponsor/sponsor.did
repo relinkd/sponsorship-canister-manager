@@ -6,5 +6,5 @@ type Param = record {
 service : {
     "get": (text) -> (opt Param) query;
     "insert": (text, Param) -> (opt Param);
-    "getSelf": () -> (principal) query;
+    "getSelf": () -> (bool) query;
 }

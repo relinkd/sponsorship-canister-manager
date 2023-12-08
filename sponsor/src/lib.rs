@@ -88,9 +88,11 @@ fn whitelist_param(key: String, value: Param) -> Option<Param> {
 }
 
 #[query(name = "getSelf", manual_reply = true)]
-fn get_self() -> ManualReply<Principal> {
+fn get_self() -> ManualReply<bool> {
     let id = ic_cdk::api::caller();
-    return ManualReply::one(id);
+    let is_controller = ic_cdk::api::is_controller(&id);
+
+    return ManualReply::one(is_controller);
 }
 
 // ic_cdk::export_candid!();
