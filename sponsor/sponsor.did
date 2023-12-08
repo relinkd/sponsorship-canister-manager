@@ -1,10 +1,10 @@
-type UserProfile = record {
-    age: nat8;
-    name: text;
+type Param = record {
+    last_use: nat64;
+    count: nat32;
 };
 
 service : {
-    "get": (nat64) -> (opt UserProfile) query;
-    "insert": (nat64, UserProfile) -> (opt UserProfile);
+    "get": (text) -> (opt Param) query;
+    "insert": (text, Param) -> (opt Param);
     "getSelf": () -> (principal) query;
 }

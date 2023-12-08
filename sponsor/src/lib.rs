@@ -9,14 +9,19 @@ use std::{borrow::Cow, cell::RefCell};
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 const MAX_VALUE_SIZE: u32 = 100;
+const MAX_KEY_SIZE: u32 = 100;
+
 
 #[derive(CandidType, Deserialize)]
-struct UserProfile {
-    age: u8,
-    name: String,
+struct Param {
+    last_use: u64,
+    count: u32,
 }
 
-impl Storable for UserProfile {
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone)]
+struct ParamKey(String);
+
+impl Storable for Param {
     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
     }
@@ -31,6 +36,22 @@ impl Storable for UserProfile {
     };
 }
 
+impl Storable for ParamKey {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        // String already implements `Storable`.
+        self.0.to_bytes()
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Self(String::from_bytes(bytes))
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: MAX_KEY_SIZE,
+        is_fixed_size: false,
+    };
+}
+
 
 thread_local! {
     // The memory manager is used for simulating multiple memories. Given a `MemoryId` it can
@@ -38,7 +59,7 @@ thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
-    static PARAMS_WHITELIST: RefCell<StableBTreeMap<u64, UserProfile, Memory>> = RefCell::new(
+    static PARAMS_WHITELIST: RefCell<StableBTreeMap<ParamKey, Param, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
         )
@@ -46,15 +67,15 @@ thread_local! {
 }
 
 // Retrieves the value associated with the given key if it exists.
-#[ic_cdk_macros::query(name = "get")]
-fn get(key: u64) -> Option<UserProfile> {
-    PARAMS_WHITELIST.with(|p| p.borrow().get(&key))
+#[query(name = "get")]
+fn get(key: String) -> Option<Param> {
+    PARAMS_WHITELIST.with(|p| p.borrow().get(&ParamKey(key)))
 }
 
 // Inserts an entry into the map and returns the previous value of the key if it exists.
-#[ic_cdk_macros::update(name = "insert")]
-fn whitelist_param(key: u64, value: UserProfile) -> Option<UserProfile> {
-    PARAMS_WHITELIST.with(|p| p.borrow_mut().insert(key, value))
+#[update(name = "insert")]
+fn whitelist_param(key: String, value: Param) -> Option<Param> {
+    PARAMS_WHITELIST.with(|p| p.borrow_mut().insert(ParamKey(key), value))
 }
 
 #[query(name = "getSelf", manual_reply = true)]
