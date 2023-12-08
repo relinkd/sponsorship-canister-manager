@@ -1,9 +1,11 @@
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{api::call::ManualReply, query, update};
+use ic_stable_structures::StableVec;
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::{
     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
 };
+use std::collections::BTreeMap;
 use std::{borrow::Cow, cell::RefCell};
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
@@ -11,6 +13,11 @@ type Memory = VirtualMemory<DefaultMemoryImpl>;
 const MAX_VALUE_SIZE: u32 = 100;
 const MAX_KEY_SIZE: u32 = 100;
 
+struct CanisterState {
+    controllers: BTreeMap<String, bool>,
+    max_call_per_user: u16,
+    timer_limit: u64,
+}
 
 #[derive(CandidType, Deserialize)]
 struct Param {
@@ -51,7 +58,6 @@ impl Storable for ParamKey {
         is_fixed_size: false,
     };
 }
-
 
 thread_local! {
     // The memory manager is used for simulating multiple memories. Given a `MemoryId` it can
