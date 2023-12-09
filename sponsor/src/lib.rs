@@ -19,7 +19,7 @@ struct CanisterState {
     timer_limit: u64,
 }
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Clone)]
 struct Param {
     is_whitelisted: bool,
     last_use: u64,
@@ -87,6 +87,27 @@ fn whitelist_param(key: String, value: Param) -> Option<Param> {
     } else {
         PARAMS_WHITELIST.with(|p| p.borrow_mut().insert(ParamKey(key), value))
     }
+}
+
+#[update(name = "logParamUsage")]
+fn log_param_usage(key: String) -> Option<Param> {
+    // let id = ic_cdk::api::caller();
+    // let is_controller = ic_cdk::api::is_controller(&id);
+
+    PARAMS_WHITELIST.with(|pl| {
+        let mut params_mut = pl.borrow_mut();
+        let params = pl.borrow();
+
+        if let Some(mut param) = params.get(&ParamKey(key.clone())) {
+            param.last_use = ic_cdk::api::time();
+            param.count += 1;
+            params_mut.insert(ParamKey(key.clone()), param.clone());
+
+            Some(param)
+        } else {
+            None
+        }
+    })
 }
 
 #[query(name = "isController", manual_reply = true)]

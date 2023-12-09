@@ -11,4 +11,5 @@ service : {
     "isParamWhitelisted": (text) -> (bool) query;
     "editManagerCanister": (text, bool) -> ();
     "isManagerCanister": (text) -> (bool);
+    "logParamUsage": (text) -> (opt Param);
 }
