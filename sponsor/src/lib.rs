@@ -22,6 +22,7 @@ struct CanisterState {
 
 #[derive(CandidType, Deserialize)]
 struct Param {
+    is_whitelisted: bool,
     last_use: u64,
     count: u32,
 }
@@ -87,12 +88,23 @@ fn whitelist_param(key: String, value: Param) -> Option<Param> {
     PARAMS_WHITELIST.with(|p| p.borrow_mut().insert(ParamKey(key), value))
 }
 
-#[query(name = "getSelf", manual_reply = true)]
-fn get_self() -> ManualReply<bool> {
+#[query(name = "isController", manual_reply = true)]
+fn is_controller() -> ManualReply<bool> {
     let id = ic_cdk::api::caller();
     let is_controller = ic_cdk::api::is_controller(&id);
 
     return ManualReply::one(is_controller);
+}
+
+#[query(name = "isParamWhitelisted", manual_reply = true)]
+fn is_param_whitelisted(key: String) -> ManualReply<bool> {
+    PARAMS_WHITELIST.with(|p| {
+        if let Some(param) = p.borrow().get(&ParamKey(key.clone())) {
+            ManualReply::one(param.is_whitelisted)
+        } else {
+            ManualReply::one(false)
+        }
+    })
 }
 
 // ic_cdk::export_candid!();

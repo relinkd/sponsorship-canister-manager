@@ -1,4 +1,5 @@
 type Param = record {
+    is_whitelisted: bool;
     last_use: nat64;
     count: nat32;
 };
@@ -6,5 +7,6 @@ type Param = record {
 service : {
     "get": (text) -> (opt Param) query;
     "insert": (text, Param) -> (opt Param);
-    "getSelf": () -> (bool) query;
+    "isController": () -> (bool) query;
+    "isParamWhitelisted": (text) -> (bool) query;
 }
