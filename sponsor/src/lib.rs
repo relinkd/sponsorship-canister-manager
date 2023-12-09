@@ -1,6 +1,5 @@
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{api::call::ManualReply, query, update};
-use ic_stable_structures::StableVec;
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::{
     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
@@ -84,8 +83,15 @@ fn get(key: String) -> Option<Param> {
 
 // Inserts an entry into the map and returns the previous value of the key if it exists.
 #[update(name = "insert")]
-fn whitelist_param(key: String, value: Param) -> Option<Param> {
-    PARAMS_WHITELIST.with(|p| p.borrow_mut().insert(ParamKey(key), value))
+fn whitelist_param(key: String, value: Param) -> Option<Param>{
+    let id = ic_cdk::api::caller();
+    let is_controller = ic_cdk::api::is_controller(&id);
+
+    if !is_controller {
+        ic_cdk::api::trap("Access denied")
+    } else {
+        PARAMS_WHITELIST.with(|p| p.borrow_mut().insert(ParamKey(key), value))
+    }
 }
 
 #[query(name = "isController", manual_reply = true)]
