@@ -10,4 +10,5 @@ service : {
     "isController": () -> (bool) query;
     "isParamWhitelisted": (text) -> (bool) query;
     "editManagerCanister": (text, bool) -> ();
+    "isManagerCanister": (text) -> (bool);
 }

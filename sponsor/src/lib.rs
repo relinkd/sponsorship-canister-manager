@@ -113,6 +113,20 @@ fn edit_manager_canister(controller: String, state: bool) -> ()  {
     }
 }
 
+#[query(name = "isManagerCanister", manual_reply = true)]
+fn is_manager_canister(principal: String) -> ManualReply<bool> {
+    CANISTER_STATE.with(|cs| {
+        let mut canister_state = cs.borrow();
+
+        if let Some(canister) = canister_state.controllers.get(&principal.clone()) {
+            ManualReply::one(canister)
+        } else {
+            ManualReply::one(false)
+        }
+    })
+}
+
+
 #[query(name = "isParamWhitelisted", manual_reply = true)]
 fn is_param_whitelisted(key: String) -> ManualReply<bool> {
     PARAMS_WHITELIST.with(|p| {
