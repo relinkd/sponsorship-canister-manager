@@ -5,8 +5,9 @@ type Param = record {
 };
 
 service : {
-    "get": (text) -> (opt Param) query;
-    "insert": (text, Param) -> (opt Param);
+    "getParam": (text) -> (opt Param) query;
+    "whitelistParam": (text, Param) -> (opt Param);
     "isController": () -> (bool) query;
     "isParamWhitelisted": (text) -> (bool) query;
+    "editManagerCanister": (text, bool) -> ();
 }

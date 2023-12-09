@@ -46,7 +46,6 @@ impl Storable for Param {
 
 impl Storable for ParamKey {
     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
-        // String already implements `Storable`.
         self.0.to_bytes()
     }
 
@@ -61,8 +60,6 @@ impl Storable for ParamKey {
 }
 
 thread_local! {
-    // The memory manager is used for simulating multiple memories. Given a `MemoryId` it can
-    // return a memory that can be used by stable structures.
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
@@ -75,15 +72,13 @@ thread_local! {
     static CANISTER_STATE: RefCell<CanisterState> = RefCell::new(CanisterState::default());
 }
 
-// Retrieves the value associated with the given key if it exists.
-#[query(name = "get")]
-fn get(key: String) -> Option<Param> {
+#[query(name = "getParam")]
+fn get_param(key: String) -> Option<Param> {
     PARAMS_WHITELIST.with(|p| p.borrow().get(&ParamKey(key)))
 }
 
-// Inserts an entry into the map and returns the previous value of the key if it exists.
-#[update(name = "insert")]
-fn whitelist_param(key: String, value: Param) -> Option<Param>{
+#[update(name = "whitelistParam")]
+fn whitelist_param(key: String, value: Param) -> Option<Param> {
     let id = ic_cdk::api::caller();
     let is_controller = ic_cdk::api::is_controller(&id);
 
@@ -100,6 +95,22 @@ fn is_controller() -> ManualReply<bool> {
     let is_controller = ic_cdk::api::is_controller(&id);
 
     return ManualReply::one(is_controller);
+}
+
+#[update(name = "editManagerCanister")]
+fn edit_manager_canister(controller: String, state: bool) -> ()  {
+    let id = ic_cdk::api::caller();
+    let is_controller = ic_cdk::api::is_controller(&id);
+
+    if !is_controller {
+        ic_cdk::api::trap("Access denied")
+    } else {
+        CANISTER_STATE.with(|cs| {
+            let mut canister_state = cs.borrow_mut();
+    
+            canister_state.controllers.insert(controller.clone(), state);
+        });
+    }
 }
 
 #[query(name = "isParamWhitelisted", manual_reply = true)]
