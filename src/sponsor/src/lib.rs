@@ -109,12 +109,12 @@ fn log_param_usage(key: String) -> Option<Param> {
     })
 }
 
-#[query(name = "isController", manual_reply = true)]
-fn is_controller() -> ManualReply<bool> {
+#[query(name = "isController")]
+fn is_controller() -> bool {
     let id = ic_cdk::api::caller();
     let is_controller = ic_cdk::api::is_controller(&id);
 
-    return ManualReply::one(is_controller);
+    return is_controller;
 }
 
 #[update(name = "setTimerLimit")]

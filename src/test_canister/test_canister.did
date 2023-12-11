@@ -1,4 +1,4 @@
 service : {
-    "greet": (text) -> (text) query;
+    "testInterCanister": (principal) -> (bool);
     "get_self": () -> (text) query;
 }
