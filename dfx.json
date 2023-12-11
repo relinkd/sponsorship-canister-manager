@@ -4,6 +4,11 @@
       "candid": "src/sponsor/sponsor.did",
       "package": "sponsor",
       "type": "rust"
+    },
+    "test_canister": {
+      "candid": "src/test_canister/test_canister.did",
+      "package": "test_canister",
+      "type": "rust"
     }
   },
   "defaults": {

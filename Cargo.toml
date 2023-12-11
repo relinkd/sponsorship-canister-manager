@@ -1,4 +1,5 @@
 [workspace]
 members = [
     "src/sponsor",
+    "src/test_canister"
 ]

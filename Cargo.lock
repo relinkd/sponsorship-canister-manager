@@ -1134,6 +1134,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "test_canister"
+version = "0.1.0"
+dependencies = [
+ "candid 0.8.4",
+ "ic-cdk 0.7.4",
+ "ic-cdk-timers",
+]
+
+[[package]]
 name = "thiserror"
 version = "1.0.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
