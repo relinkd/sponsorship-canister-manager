@@ -12,4 +12,5 @@ service : {
     "editManagerCanister": (text, bool) -> ();
     "isManagerCanister": (text) -> (bool);
     "logParamUsage": (text) -> (opt Param);
+    "isParamTimeAvailable": (text) -> (bool)
 }

@@ -117,6 +117,22 @@ fn is_controller() -> ManualReply<bool> {
     return ManualReply::one(is_controller);
 }
 
+// #[update(name = "updateCanisterState")]
+// fn update_canister_state(state: CanisterState) -> ()  {
+//     let id = ic_cdk::api::caller();
+//     let is_controller = ic_cdk::api::is_controller(&id);
+
+//     if !is_controller {
+//         ic_cdk::api::trap("Access denied")
+//     } else {
+//         CANISTER_STATE.with(|cs| {
+//             let mut canister_state = cs.borrow_mut();
+    
+//             canister_state = state;
+//         });
+//     }
+// }
+
 #[update(name = "editManagerCanister")]
 fn edit_manager_canister(controller: String, state: bool) -> ()  {
     let id = ic_cdk::api::caller();
@@ -136,7 +152,7 @@ fn edit_manager_canister(controller: String, state: bool) -> ()  {
 #[query(name = "isManagerCanister", manual_reply = true)]
 fn is_manager_canister(principal: String) -> ManualReply<bool> {
     CANISTER_STATE.with(|cs| {
-        let mut canister_state = cs.borrow();
+        let canister_state = cs.borrow();
 
         if let Some(canister) = canister_state.controllers.get(&principal.clone()) {
             ManualReply::one(canister)
@@ -152,6 +168,21 @@ fn is_param_whitelisted(key: String) -> ManualReply<bool> {
     PARAMS_WHITELIST.with(|p| {
         if let Some(param) = p.borrow().get(&ParamKey(key.clone())) {
             ManualReply::one(param.is_whitelisted)
+        } else {
+            ManualReply::one(false)
+        }
+    })
+}
+
+#[query(name = "isParamTimeAvailable", manual_reply = true)]
+fn is_param_time_available(key: String) -> ManualReply<bool> {
+    PARAMS_WHITELIST.with(|p| {
+        if let Some(param) = p.borrow().get(&ParamKey(key.clone())) {
+            CANISTER_STATE.with(|cs| {
+                let canister_state = cs.borrow();
+        
+                ManualReply::one((ic_cdk::api::time() - param.last_use) > canister_state.timer_limit)
+            })
         } else {
             ManualReply::one(false)
         }
