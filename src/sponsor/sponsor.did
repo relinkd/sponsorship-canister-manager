@@ -13,5 +13,5 @@ service : {
     "isManagerCanister": (text) -> (bool) query;
     "logParamUsage": (text) -> (opt Param);
     "isParamTimeAvailable": (text) -> (bool) query;
-    "setTimerLimit": (u64) -> () query;
+    "setTimerLimit": (nat64) -> () query;
 }

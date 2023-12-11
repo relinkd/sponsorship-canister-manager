@@ -1,7 +1,7 @@
 {
   "canisters": {
     "sponsor": {
-      "candid": "sponsor/sponsor.did",
+      "candid": "src/sponsor/sponsor.did",
       "package": "sponsor",
       "type": "rust"
     }
