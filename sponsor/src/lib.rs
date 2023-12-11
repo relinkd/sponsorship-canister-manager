@@ -117,21 +117,21 @@ fn is_controller() -> ManualReply<bool> {
     return ManualReply::one(is_controller);
 }
 
-// #[update(name = "updateCanisterState")]
-// fn update_canister_state(state: CanisterState) -> ()  {
-//     let id = ic_cdk::api::caller();
-//     let is_controller = ic_cdk::api::is_controller(&id);
+#[update(name = "setTimerLimit")]
+fn set_timer_limit(limit: u64) -> ()  {
+    let id = ic_cdk::api::caller();
+    let is_controller = ic_cdk::api::is_controller(&id);
 
-//     if !is_controller {
-//         ic_cdk::api::trap("Access denied")
-//     } else {
-//         CANISTER_STATE.with(|cs| {
-//             let mut canister_state = cs.borrow_mut();
+    if !is_controller {
+        ic_cdk::api::trap("Access denied")
+    } else {
+        CANISTER_STATE.with(|cs| {
+            let mut canister_state = cs.borrow_mut();
     
-//             canister_state = state;
-//         });
-//     }
-// }
+            canister_state.timer_limit = limit;
+        });
+    }
+}
 
 #[update(name = "editManagerCanister")]
 fn edit_manager_canister(controller: String, state: bool) -> ()  {

@@ -10,7 +10,8 @@ service : {
     "isController": () -> (bool) query;
     "isParamWhitelisted": (text) -> (bool) query;
     "editManagerCanister": (text, bool) -> ();
-    "isManagerCanister": (text) -> (bool);
+    "isManagerCanister": (text) -> (bool) query;
     "logParamUsage": (text) -> (opt Param);
-    "isParamTimeAvailable": (text) -> (bool)
+    "isParamTimeAvailable": (text) -> (bool) query;
+    "setTimerLimit": (u64) -> () query;
 }
