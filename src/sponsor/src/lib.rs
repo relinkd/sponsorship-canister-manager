@@ -89,20 +89,39 @@ fn whitelist_param(key: String, value: Param) -> Option<Param> {
     }
 }
 
+#[query(name = "isManagerCanister", manual_reply = true)]
+fn is_manager_canister(principal: String) -> bool {
+    CANISTER_STATE.with(|cs| {
+        let canister_state = cs.borrow();
+
+        if let Some(canister) = canister_state.controllers.get(&principal.clone()) {
+            *canister
+        } else {
+            false
+        }
+    })
+}
+
 #[update(name = "logParamUsage")]
 fn log_param_usage(key: String) -> Option<Param> {
-    // let id = ic_cdk::api::caller();
+    let id = ic_cdk::api::caller();
     // let is_controller = ic_cdk::api::is_controller(&id);
+
+    let is_manager = is_manager_canister(id.to_string());
 
     PARAMS_WHITELIST.with(|pl| {
         let mut params_mut = pl.borrow_mut();
 
-        if let Some(mut param) = params_mut.get(&ParamKey(key.clone())) {
-            param.last_use = ic_cdk::api::time();
-            param.count += 1;
-            params_mut.insert(ParamKey(key.clone()), param.clone());
-
-            Some(param)
+        if is_manager {
+            if let Some(mut param) = params_mut.get(&ParamKey(key.clone())) {
+                param.last_use = ic_cdk::api::time();
+                param.count += 1;
+                params_mut.insert(ParamKey(key.clone()), param.clone());
+    
+                Some(param)
+            } else {
+                None
+            }
         } else {
             None
         }
@@ -148,20 +167,6 @@ fn edit_manager_canister(controller: String, state: bool) -> ()  {
         });
     }
 }
-
-#[query(name = "isManagerCanister", manual_reply = true)]
-fn is_manager_canister(principal: String) -> ManualReply<bool> {
-    CANISTER_STATE.with(|cs| {
-        let canister_state = cs.borrow();
-
-        if let Some(canister) = canister_state.controllers.get(&principal.clone()) {
-            ManualReply::one(canister)
-        } else {
-            ManualReply::one(false)
-        }
-    })
-}
-
 
 #[query(name = "isParamWhitelisted", manual_reply = true)]
 fn is_param_whitelisted(key: String) -> ManualReply<bool> {
