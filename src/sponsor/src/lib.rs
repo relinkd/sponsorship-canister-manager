@@ -89,7 +89,7 @@ fn whitelist_param(key: String, value: Param) -> Option<Param> {
     }
 }
 
-#[query(name = "isManagerCanister", manual_reply = true)]
+#[query(name = "isManagerCanister")]
 fn is_manager_canister(principal: String) -> bool {
     CANISTER_STATE.with(|cs| {
         let canister_state = cs.borrow();
@@ -109,6 +109,9 @@ fn log_param_usage(key: String) -> Option<Param> {
 
     let is_manager = is_manager_canister(id.to_string());
 
+    ic_cdk::println!("{:?}", id.to_string());
+    ic_cdk::println!("{:?}", is_manager);
+
     PARAMS_WHITELIST.with(|pl| {
         let mut params_mut = pl.borrow_mut();
 
@@ -120,10 +123,10 @@ fn log_param_usage(key: String) -> Option<Param> {
     
                 Some(param)
             } else {
-                None
+                ic_cdk::api::trap("Param is not defined")
             }
         } else {
-            None
+            ic_cdk::api::trap("Access denied")
         }
     })
 }
