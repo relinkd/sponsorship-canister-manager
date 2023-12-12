@@ -1,4 +1,5 @@
 service : {
     "testInterCanister": (principal) -> (bool);
     "get_self": () -> (text) query;
+    "logParamTest": (principal, text) -> ();
 }

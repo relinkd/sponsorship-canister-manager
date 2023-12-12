@@ -17,3 +17,12 @@ fn get_self() -> String {
 
     return id;
 }
+
+#[ic_cdk::update(name = "logParamTest")]
+async fn log_param_test(principal: Principal, param: String) -> () {
+
+    let result: CallResult<()> =
+        ic_cdk::call(principal, "logParamUsage", (param,)).await;
+
+    ic_cdk::println!("{:?}", result);
+}
