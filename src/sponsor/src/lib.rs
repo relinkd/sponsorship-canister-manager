@@ -22,6 +22,7 @@ struct CanisterState {
 #[derive(CandidType, Deserialize, Clone)]
 struct Param {
     is_whitelisted: bool,
+    is_principal: bool,
     last_use: u64,
     count: u32,
 }

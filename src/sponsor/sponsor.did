@@ -1,5 +1,6 @@
 type Param = record {
     is_whitelisted: bool;
+    is_principal: bool;
     last_use: nat64;
     count: nat32;
 };
