@@ -2,7 +2,7 @@
 
 ---
 
-The Sponsorship Canister Manager is deployed for one or multiple canisters within the protocol and is controlled by the owner/owners.
+The Sponsorship Canister Manager is deployed for one or multiple canisters within the protocol and is controlled by the owner or owners.
 
 The canister allows sponsoring user transactions based on Reversed Gas using a whitelist of string parameters (in the context of {r}elinkd, EVM wallets are considered).
 
