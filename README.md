@@ -26,6 +26,8 @@ Canisters that are in the whitelist can fully utilize all functionality with a c
 
 For more details, you can refer to `src/test_canister`.
 
+![Image alt](https://github.com/relinkd/sponsorship-canister-manager/raw/main/scheme.png)
+
 ## the project locally
 
 If you want to test your project locally, you can use the following commands:
